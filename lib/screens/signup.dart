@@ -12,6 +12,7 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  // late String username;
   late String email;
   late String password;
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -33,7 +34,7 @@ class _SignupState extends State<Signup> {
 
   String? validatePass(value) {
     if (value!.isEmpty) {
-      return "Required";
+      return "Required *";
     } else if (value.length < 6) {
       return "Password Should be Atleast 6 Character";
     } else if (value.length > 15) {
@@ -46,121 +47,192 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      //
+      //                      APP BAR
+      //
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.indigo[600],
-        title: Text('   SignUp'),
+        title: Text(
+          "SignUp",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Merriweather',
+          ),
+        ),
       ),
+      //
+      //                      APP BODY
+      //
       body: Form(
         key: formkey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(18),
+            child: SingleChildScrollView(
+                child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 250,
+              child: Image.asset(
+                "assets/logo2.png",
+                height: 200,
+                width: 200,
+              ),
+            ),
+            //
+            //                 EMAIL TEXT FIELD
+            //
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 35),
+              child: TextFormField(
+                onChanged: (val) {
+                  email = val;
+                },
+                validator: MultiValidator([
+                  RequiredValidator(errorText: "Required *"),
+                  EmailValidator(errorText: "Not A Valid Email"),
+                ]),
+                decoration: InputDecoration(
+                  hintText: "Enter your email",
+                  // labelText: 'Email',
+                  prefixIcon: Icon(
+                    Icons.email,
+                    color: Colors.indigo[600],
+                  ),
+                  filled: true,
+                  fillColor: Colors.indigo[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+            //
+            //                PASSWORD TEXT FIELD
+            //
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 35),
+              child: TextFormField(
+                onChanged: (val) {
+                  password = val;
+                },
+                validator: validatePass,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Enter your password",
+                  // labelText: 'Email',
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: Colors.indigo[600],
+                  ),
+                  filled: true,
+                  fillColor: Colors.indigo[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            //
+            //                SIGNUP BUTTON
+            //
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 36),
+              // height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: handleSignup,
                     child: Text(
-                      'Todo App',
+                      'SignUp',
                       style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 35),
-                    )),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 18),
-                  child: TextFormField(
-                    onChanged: (val) {
-                      email = val;
-                    },
-                    validator: MultiValidator([
-                      RequiredValidator(errorText: "Required *"),
-                      EmailValidator(errorText: "Not A Valid Email"),
-                    ]),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      labelText: 'Email',
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Merriweather',
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 33)),
+                      elevation: MaterialStateProperty.all(8),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                              side: BorderSide(
+                                  color: Color.fromRGBO(57, 73, 171, 1)))),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Color.fromRGBO(57, 73, 171, 1)),
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 18),
-                  child: TextFormField(
-                    onChanged: (val) {
-                      password = val;
-                    },
-                    validator: validatePass,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      labelText: 'Password',
-                    ),
-                  ),
-                ),
-                Container(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            //
+            //                  GOOGLE SIGNUP
+            //
+            InkWell(
+              onTap: () => googleSignin().whenComplete(() async {
+                User user = await FirebaseAuth.instance.currentUser!;
+                Get.off(Home(uid: user.uid));
+              }),
+              child: Container(
+                width: 200,
+                margin: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(3.0),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 1.5, color: Color.fromRGBO(57, 73, 171, 1))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        child: ElevatedButton(
-                            child: Text('SignUp'),
-                            style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                              // side: BorderSide(color: Colors.red)
-                            ))),
-                            onPressed: handleSignup
-                            //  =>
-                            // signUp(email.trim(), password)
-                            //         .whenComplete(() async {
-                            //       User user = await FirebaseAuth
-                            //           .instance.currentUser!;
-                            //       Get.offAll(Home(uid: user.uid));
-                            //     }
-                            // )
-                            )),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    MaterialButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => googleSignin().whenComplete(() async {
-                        User user = await FirebaseAuth.instance.currentUser!;
-                        Get.off(Home(uid: user.uid));
-                      }),
-                      child: Image(
-                        image: AssetImage('assets/signin.png'),
-                        width: 200.0,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        // send to login screen
-                        Get.off(Login());
-                      },
-                      child: Text(
-                        "Already Have Account LoginIn Here",
-                      ),
+                    Image.asset("assets/google.png", height: 36),
+                    Text(
+                      'Sign in With Google',
+                      style: TextStyle(
+                          fontSize: 15.5,
+                          color: Colors.indigo[600],
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
-                ))
-              ],
+                ),
+              ),
             ),
-          ),
-        ),
+            SizedBox(
+              height: 10.0,
+            ),
+            //
+            //                  NAVIGATE TO SIGNUP
+            //
+            InkWell(
+              onTap: () {
+                // send to signin screen
+                Get.off(Login());
+              },
+              child: Text(
+                "Already Have Account LoginIn Here",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  fontSize: 12,
+                  color: Colors.indigo[600],
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Merriweather',
+                ),
+              ),
+            ),
+          ],
+        ))),
       ),
     );
   }

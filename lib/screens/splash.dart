@@ -11,45 +11,58 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   @override
-  void initState() {
-    super.initState();
-    Timer(
-        Duration(seconds: 10),
-        () => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Signup())));
-  }
+  // void initState() {
+  //   super.initState();
+  //   Timer(
+  //       Duration(seconds: 5),
+  //       () => Navigator.pushReplacement(
+  //           context, MaterialPageRoute(builder: (context) => Signup())));
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo[600],
+      resizeToAvoidBottomInset: false,
+      // backgroundColor: Colors.indigo[100],
       body: Center(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-                width: 140,
-                height: 140,
-                child: Image(
-                  image: AssetImage("assets/tick.png"),
-                  fit: BoxFit.cover,
-                )),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Todo",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold),
+            SizedBox(
+              height: 430,
+              child: Image.asset(
+                "assets/logo2.png",
+                height: 430,
+                width: 300,
+                // fit: BoxFit.fitWidth,
+              ),
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Signup())),
+              child: Text(
+                'Get Started',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Merriweather',
                 ),
-                Text("App",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold))
-              ],
+              ),
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.symmetric(vertical: 20, horizontal: 38)),
+                elevation: MaterialStateProperty.all(10),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        side:
+                            BorderSide(color: Color.fromRGBO(57, 73, 171, 1)))),
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromRGBO(57, 73, 171, 1)),
+              ),
             ),
           ],
         ),

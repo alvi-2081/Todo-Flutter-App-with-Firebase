@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -5,7 +6,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 final google_SignIn = GoogleSignIn();
-
+//
+//                    GOOGLE SIGN IN
+//
 Future<bool> googleSignin() async {
   GoogleSignInAccount? googleSignInAccount = await google_SignIn.signIn();
 
@@ -23,11 +26,18 @@ Future<bool> googleSignin() async {
   return Future.value(true);
 }
 
+//
+//                       USER SIGNUP
+//
 Future<User> signUp(String email, String password, BuildContext context) async {
   try {
     UserCredential result = await auth.createUserWithEmailAndPassword(
         email: email, password: password);
     User? user = result.user;
+    // FirebaseFirestore.instance.collection('users').add({
+    //   "username": username,
+    //   "email": email,
+    // });
     return Future.value(user);
   } on FirebaseAuthException catch (e) {
     Fluttertoast.showToast(msg: e.message!, gravity: ToastGravity.BOTTOM);
@@ -38,10 +48,13 @@ Future<User> signUp(String email, String password, BuildContext context) async {
     //   }
     // } catch (e) {
     //   print(e);
-    return Future.value(null);
+    return Future.value();
   }
 }
 
+//
+//                      USER LOGIN
+//
 Future<User> logIn(String email, String password, BuildContext context) async {
   try {
     UserCredential result =
@@ -59,11 +72,16 @@ Future<User> logIn(String email, String password, BuildContext context) async {
   }
 }
 
+//
+//                          GOOGLE AND USER LOGOUT
+//
 Future<bool> signOutUser() async {
-  User? user = await auth.currentUser;
-  if (user!.providerData[1].providerId == 'google.com') {
-    await google_SignIn.disconnect();
-  }
+  // User? user = await auth.currentUser;
+  // if (user!.providerData[1].providerId == 'google.com') {
+  //   await google_SignIn.disconnect();
+  //   await GoogleSignIn().signOut();
+  // }
+  await GoogleSignIn().signOut();
   await auth.signOut();
   return Future.value(true);
 }

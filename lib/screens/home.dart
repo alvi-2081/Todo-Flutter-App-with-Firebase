@@ -3,6 +3,7 @@ import 'package:firebase/screens/add.dart';
 import 'package:firebase/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
 class Home extends StatefulWidget {
@@ -18,41 +19,28 @@ class _HomeState extends State<Home> {
   _HomeState(this.uid);
   var taskcollections = FirebaseFirestore.instance.collection('users');
   late String task;
-
-  updateDialog(DocumentSnapshot<Object?> document) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Update Task"),
-            content: Column(
-              children: [
-                TextField(
-                  controller: taskEditController,
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      document.reference
-                          .update({"taskName": taskEditController.text});
-                      Navigator.pop(context);
-                      taskEditController.clear();
-                    },
-                    child: Text("Update"))
-              ],
-            ),
-          );
-        });
-  }
-
+  DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+  TextEditingController taskTitleEditController = TextEditingController();
+  TextEditingController taskDetailEditController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         //
         //                            APPBAR STARTS
         //
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Colors.indigo[600],
-          title: Text("Todo"),
+          title: Text(
+            "My Tasks",
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Merriweather',
+            ),
+          ),
         ),
         //
         //                            DRAWER STARTS
@@ -61,15 +49,24 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               UserAccountsDrawerHeader(
-                accountEmail: Text("abdullah"),
+                accountEmail: Text("abdullah@gmail.com"),
                 accountName: Text("abdullah"),
               ),
               SizedBox(
                 height: 8,
               ),
               ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text("Logout"),
+                  leading: Icon(
+                    Icons.logout,
+                    color: Colors.indigo[600],
+                  ),
+                  title: Text(
+                    "Logout",
+                    style: TextStyle(
+                      fontFamily: 'Merriweather',
+                      color: Colors.indigo[600],
+                    ),
+                  ),
                   onTap: () => signOutUser().whenComplete(() async {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (context) => Login()),
@@ -79,7 +76,15 @@ class _HomeState extends State<Home> {
                 height: 8,
               ),
               ListTile(
-                  leading: Icon(Icons.info), title: Text("About"), onTap: () {})
+                  leading: Icon(Icons.info, color: Colors.indigo[600]),
+                  title: Text(
+                    "About",
+                    style: TextStyle(
+                      fontFamily: 'Merriweather',
+                      color: Colors.indigo[600],
+                    ),
+                  ),
+                  onTap: () {})
             ],
           ),
         ),
@@ -118,138 +123,317 @@ class _HomeState extends State<Home> {
                       Map<String, dynamic> data =
                           document.data()! as Map<String, dynamic>;
                       return Card(
-                        color: Colors.indigo[200],
                         margin:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                         elevation: 5,
-                        child: ListTile(
-                          title: Text(
-                            data['taskName'],
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            data['taskDetail'],
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(data['taskTime'],
-                                  style: TextStyle(
-                                    color: Colors.white,
+                        color: Colors.indigo[100],
+                        child: Slidable(
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: Color.fromRGBO(57, 73, 171, 1),
+                                    width: 1,
                                   )),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              IconButton(
-                                  color: Colors.white,
-                                  onPressed: () {
-                                    document.reference.delete();
-                                  },
-                                  icon: Icon(Icons.delete)),
-                              IconButton(
-                                  color: Colors.white,
-                                  onPressed: () {
-                                    updateDialog(document);
-                                  },
-                                  icon: Icon(Icons.edit)),
-                            ],
-                          ),
+                              width: MediaQuery.of(context).size.width * 1,
+                              height: 100,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                      left: 15,
+                                      top: 18,
+                                      child: Text(
+                                        data['taskName'],
+                                        style: TextStyle(
+                                            fontFamily: 'Merriweather',
+                                            // fontStyle: FontStyle.,
+                                            color: Colors.indigo[600],
+                                            fontWeight: FontWeight.w900,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            fontSize: 23),
+                                      )),
+                                  Positioned(
+                                      left: 15,
+                                      bottom: 20,
+                                      child: Text(
+                                        data['taskDetail'],
+                                        style: TextStyle(
+                                            fontFamily: 'Merriweather',
+                                            color: Colors.indigo[400],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
+                                      )),
+                                  Positioned(
+                                      right: 55,
+                                      top: 25,
+                                      child: Text(
+                                        data['taskDate'],
+                                        style: TextStyle(
+                                            color: Colors.indigo[400],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
+                                      )),
+                                  Positioned(
+                                      right: 55,
+                                      bottom: 25,
+                                      child: Text(
+                                        data['taskTime'],
+                                        style: TextStyle(
+                                            color: Colors.indigo[400],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
+                                      )),
+                                  Positioned(
+                                      right: 10,
+                                      top: 6,
+                                      child: IconButton(
+                                          color: Colors.indigo[600],
+                                          onPressed: () {
+                                            updateDialog(document);
+                                          },
+                                          icon: Icon(Icons.edit))),
+                                  Positioned(
+                                      right: 10,
+                                      bottom: 10,
+                                      child: IconButton(
+                                          color: Colors.indigo[600],
+                                          onPressed: () {
+                                            document.reference.delete();
+                                          },
+                                          icon: Icon(Icons.delete)))
+                                ],
+                              )),
                         ),
                       );
                     }).toList(),
                   );
                 },
-              ))
+              )),
             ],
           ),
         ));
   }
 
-  TextEditingController taskEditController = TextEditingController();
+  updateDialog(DocumentSnapshot<Object?> document) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              "Update Task",
+              style: TextStyle(
+                  fontSize: 25,
+                  decoration: TextDecoration.underline,
+                  fontFamily: 'Merriweather',
+                  color: Color.fromRGBO(63, 81, 181, 1),
+                  fontWeight: FontWeight.bold),
+            ),
+            content: SingleChildScrollView(
+              child: Column(children: [
+                TextField(
+                  controller: taskTitleEditController,
+                  style: TextStyle(color: Colors.indigo[600]),
+                  cursorColor: Colors.indigo[600],
+                  decoration: InputDecoration(
+                      enabledBorder: new UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(63, 81, 181, 1)),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(63, 81, 181, 1)),
+                      ),
+                      labelText: 'Task Title',
+                      hintText: 'Enter Task Title',
+                      labelStyle: TextStyle(
+                          fontFamily: 'Merriweather',
+                          color: Color.fromRGBO(63, 81, 181, 1),
+                          fontWeight: FontWeight.bold)),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: taskDetailEditController,
+                  style: TextStyle(color: Colors.indigo[600]),
+                  cursorColor: Colors.indigo[600],
+                  decoration: InputDecoration(
+                      enabledBorder: new UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(63, 81, 181, 1)),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(63, 81, 181, 1)),
+                      ),
+                      labelText: 'Task Details',
+                      hintText: 'Enter Task Details',
+                      labelStyle: TextStyle(
+                          fontFamily: 'Merriweather',
+                          color: Color.fromRGBO(63, 81, 181, 1),
+                          fontWeight: FontWeight.bold)),
+                ),
+                SizedBox(height: 10),
+                ListTile(
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  title: const Text(
+                    'Select a Date',
+                    style: TextStyle(
+                        fontFamily: 'Merriweather',
+                        color: Color.fromRGBO(57, 73, 171, 1),
+                        fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                    style: TextStyle(color: Color.fromRGBO(57, 73, 171, 1)),
+                  ),
+                  trailing: IconButton(
+                      onPressed: () {
+                        _selectDate(context);
+                      },
+                      icon: Icon(
+                        Icons.date_range,
+                        color: Colors.indigo[600],
+                      )),
+                ),
+                SizedBox(height: 10),
+                ListTile(
+                  onTap: () {
+                    _selectTime(context);
+                  },
+                  title: const Text(
+                    'Select a Time',
+                    style: TextStyle(
+                        fontFamily: 'Merriweather',
+                        color: Color.fromRGBO(57, 73, 171, 1),
+                        fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    "${selectedTime.hour}:${selectedTime.minute}",
+                    style: TextStyle(color: Color.fromRGBO(57, 73, 171, 1)),
+                  ),
+                  trailing: IconButton(
+                      onPressed: () {
+                        _selectTime(context);
+                      },
+                      icon: Icon(
+                        Icons.alarm,
+                        color: Colors.indigo[600],
+                      )),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          document.reference.update({
+                            "taskName": taskTitleEditController.text,
+                            "taskDetail": taskDetailEditController.text,
+                            "taskDate":
+                                "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                            "taskTime":
+                                "${selectedTime.hour}:${selectedTime.minute}",
+                          });
+                          Navigator.pop(context);
+                          taskTitleEditController.clear();
+                        },
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all(
+                              EdgeInsets.symmetric(
+                                  vertical: 17, horizontal: 33)),
+                          elevation: MaterialStateProperty.all(8),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      side: BorderSide(
+                                          color:
+                                              Color.fromRGBO(57, 73, 171, 1)))),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Color.fromRGBO(57, 73, 171, 1)),
+                        ),
+                        child: Text(
+                          "Update Task",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Merriweather',
+                          ),
+                        )),
+                  ],
+                ),
+              ]),
+            ),
+          );
+        });
+  }
+
+  _selectDate(BuildContext context) async {
+    DateTime? selected = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2010),
+      lastDate: DateTime(2025),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary:
+                  Color.fromRGBO(57, 73, 171, 1), // header background color
+              // onPrimary: Colors.black, // header text color
+              onSurface: Color.fromRGBO(57, 73, 171, 1), // body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Color.fromRGBO(57, 73, 171, 1), // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selected != null && selected != selectedDate) {
+      setState(() {
+        selectedDate = selected;
+      });
+    }
+  }
+
+//
+//                       FUNCTION FOR TIME
+//
+
+  _selectTime(BuildContext context) async {
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary:
+                  Color.fromRGBO(57, 73, 171, 1), // header background color
+              onSurface: Color.fromRGBO(57, 73, 171, 1), // body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Color.fromRGBO(57, 73, 171, 1), // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (timeOfDay != null && timeOfDay != selectedTime) {
+      setState(() {
+        selectedTime = timeOfDay;
+      });
+    }
+  }
 }
-
-// actions: [
-//   IconButton(
-//       icon: Icon(Icons.logout),
-//       color: Colors.white,
-//       onPressed: () => signOutUser().whenComplete(() async {
-//             Navigator.of(context).pushAndRemoveUntil(
-//                 MaterialPageRoute(builder: (context) => Login()),
-//                 (Route<dynamic> route) => false);
-//           }))
-// ],
-
-// SizedBox(
-//   height: 8,
-// ),
-// ListTile(
-//   leading: Icon(Icons.shopping_cart),
-//   title: Text("Cart"),
-// ),
-// SizedBox(
-//   height: 8,
-// ),
-// ListTile(
-//   leading: Icon(Icons.favorite),
-//   title: Text("Favourite"),
-// ),
-
-// Column(children: [
-//   Container(
-//     margin: EdgeInsets.symmetric(horizontal: 10),
-//     padding: EdgeInsets.all(10),
-//     child: TextField(
-//       decoration: InputDecoration(
-//           border: InputBorder.none,
-//           labelText: 'Title',
-//           hintText: 'Enter Task Title'),
-//       controller: taskTitle,
-//     ),
-//   ),
-//   Container(
-//     margin: EdgeInsets.symmetric(horizontal: 10),
-//     padding: EdgeInsets.all(10),
-//     child: TextField(
-//       decoration: InputDecoration(
-//           border: InputBorder.none,
-//           labelText: 'Details',
-//           hintText: 'Enter Task Details'),
-//       controller: taskDetail,
-//     ),
-//   ),
-//   Container(
-//     margin: EdgeInsets.symmetric(horizontal: 10),
-//     padding: EdgeInsets.all(10),
-//     child: TextField(
-//       decoration: InputDecoration(
-//           border: InputBorder.none,
-//           labelText: 'Time',
-//           hintText: 'Enter Task Time'),
-//       controller: taskTime,
-//     ),
-//   ),
-//   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-//     ElevatedButton(
-//         style: ButtonStyle(
-//           backgroundColor:
-//               MaterialStateProperty.all<Color>(Colors.brown),
-//         ),
-//         onPressed: () {
-//           setState(() {
-//             addData();
-//           });
-//           taskTitle.clear();
-//           taskDetail.clear();
-//           taskTime.clear();
-//         },
-//         child: Text("Add Task")),
-//   ]),
-// ]),

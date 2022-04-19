@@ -15,6 +15,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(debugShowCheckedModeBanner: false, home: Splash());
+    return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Todo App",
+        theme: ThemeData(
+          primaryColor: Colors.indigo[600],
+        ),
+        home: Splash());
   }
 }

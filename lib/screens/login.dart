@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
+import 'package:flutter_svg/svg.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -46,44 +47,73 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
+        //
+        //                APP BAR
+        //
         appBar: AppBar(
-          title: Text('   Login'),
+          centerTitle: true,
+          backgroundColor: Colors.indigo[600],
+          title: Text(
+            "Login",
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Merriweather',
+            ),
+          ),
         ),
+        //
+        //                  APP BODY
+        //
         body: Form(
           key: formkey,
           child: Center(
               child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(
+                  height: 250,
+                  child: Image.asset(
+                    "assets/logo2.png",
+                    height: 200,
+                    width: 200,
+                  ),
+                ),
+                //
+                //            EMAIL TEXT FIELD
+                //
                 Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(18),
-                    child: Text(
-                      'Todo App',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 35),
-                    )),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 35),
                   child: TextFormField(
                     onChanged: (val) {
                       email = val;
                     },
+                    decoration: InputDecoration(
+                      hintText: "Enter your email",
+                      // labelText: 'Email',
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: Colors.indigo[600],
+                      ),
+                      filled: true,
+                      fillColor: Colors.indigo[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                     validator: MultiValidator([
                       RequiredValidator(errorText: "Required *"),
                       EmailValidator(errorText: "Not A Valid Email"),
                     ]),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      labelText: 'Email',
-                    ),
                   ),
                 ),
+                //
+                //            PASSWORD TEXT FIELD
+                //
                 Container(
-                  padding: EdgeInsets.fromLTRB(18, 10, 18, 0),
+                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 35),
                   child: TextFormField(
                     obscureText: true,
                     onChanged: (val) {
@@ -91,61 +121,122 @@ class _LoginState extends State<Login> {
                     },
                     validator: validatePass,
                     decoration: InputDecoration(
+                      hintText: "Enter your password",
+                      // labelText: 'Email',
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: Colors.indigo[600],
+                      ),
+                      filled: true,
+                      fillColor: Colors.indigo[100],
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      labelText: 'Password',
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 5,
+                ),
+                //
+                //            FORGOT AND LOGIN BUTTON
+                //
                 Container(
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        //forgot password screen
-                      },
-                      child: Text('Forgot Password'),
-                    ),
                     Container(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        child: ElevatedButton(
-                            child: Text('Login'),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.indigo[600]),
+                      padding: EdgeInsets.symmetric(horizontal: 36),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              //forgot password screen
+                            },
+                            child: Text(
+                              'Forget Password',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontSize: 12,
+                                color: Colors.indigo[600],
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Merriweather',
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: handleLogin,
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Merriweather',
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 33)),
+                                elevation: MaterialStateProperty.all(8),
                                 shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  // side: BorderSide(color: Colors.red)
-                                ))),
-                            onPressed: handleLogin
-                            // () => logIn(email.trim(), password)
-                            //         .whenComplete(() async {
-                            //       // User user =
-                            //       //     await FirebaseAuth.instance.currentUser!;
-                            //       Get.off(Home(uid: value.uid));
-                            //     })
-                            )),
-                    SizedBox(
-                      height: 13.0,
+                                        borderRadius:
+                                            BorderRadius.circular(30.0),
+                                        side: BorderSide(
+                                            color: Color.fromRGBO(
+                                                57, 73, 171, 1)))),
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Color.fromRGBO(57, 73, 171, 1)),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                    MaterialButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => googleSignin().whenComplete(() async {
+                    //
+                    //        GOOGLE SIGNUP
+                    //
+                    InkWell(
+                      onTap: () => googleSignin().whenComplete(() async {
                         User user = await FirebaseAuth.instance.currentUser!;
                         Get.off(Home(uid: user.uid));
                       }),
-                      child: Image(
-                        image: AssetImage('assets/signin.png'),
-                        width: 200.0,
+                      child: Container(
+                        width: 200,
+                        margin: const EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.all(3.0),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 1.5,
+                                color: Color.fromRGBO(57, 73, 171, 1))),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset("assets/google.png", height: 36),
+                            Text(
+                              'Sign in With Google',
+                              style: TextStyle(
+                                  fontSize: 15.5,
+                                  color: Colors.indigo[600],
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(
-                      height: 13.0,
+                      height: 10.0,
                     ),
+                    //
+                    //          NAVIGATE TO SIGNUP
+                    //
                     InkWell(
                       onTap: () {
                         // send to signin screen
@@ -153,6 +244,13 @@ class _LoginState extends State<Login> {
                       },
                       child: Text(
                         "Don't Have Account SignUp Here",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontSize: 12,
+                          color: Colors.indigo[600],
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Merriweather',
+                        ),
                       ),
                     ),
                   ],
